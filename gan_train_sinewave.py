@@ -13,18 +13,16 @@ name = 'mnist'
 split_name = 'train'
 batch_size = 1000
 #iteration test
-result_dir = os.path.join('/media/dan/DATA/hukim/Research/srnet/low_dim', 'test1', 'result')
-ckpt_dir =  os.path.join('/media/dan/DATA/hukim/Research/srnet/low_dim', 'test1', 'weight')
-log_dir =  os.path.join('/media/dan/DATA/hukim/Research/srnet/low_dim', 'test1', 'weight')
+save_path = '/home/hukim/prj/results'
+result_dir = os.path.join(save_path, 'test1', 'result')
+ckpt_dir =  os.path.join(save_path, 'test1', 'weight')
+log_dir =  os.path.join(save_path, 'test1', 'weight')
 if not os.path.isdir(result_dir):
 	os.makedirs(result_dir)
 if not os.path.isdir(ckpt_dir):
 	os.makedirs(ckpt_dir)
 if not os.path.isdir(log_dir):
 	os.makedirs(log_dir)
-
-
-
 
 
 
@@ -41,8 +39,8 @@ fig.savefig(os.path.join(result_dir, 'original.png'), dpi=fig.dpi)
 gan_data = data.Data(cat_dim, code_con_dim, total_con_dim, channel, path, name, split_name, batch_size)
 gan_data.real_data = real_data
 gan_model = gan.Gan(gan_data)
-gan_model.train(result_dir, ckpt_dir, log_dir, training_iteration = 20000, G_update_num=5, D_update_num=1)
-a = gan_model.test_tmp(result_dir)
+gan_model.train(result_dir, ckpt_dir, log_dir, training_iteration = 50000, G_update_num=5, D_update_num=1)
+a = gan_model.test_tmp(ckpt_dir, result_dir)
 
 del gan_data
 del gan_model
