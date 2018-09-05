@@ -1,0 +1,6 @@
+model_checkpoint_path: "/home/dan/prj/lab2/results/test5_infogan_condim=2/weight/model-77004"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test5_infogan_condim=2/weight/model-73004"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test5_infogan_condim=2/weight/model-74004"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test5_infogan_condim=2/weight/model-75004"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test5_infogan_condim=2/weight/model-76004"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test5_infogan_condim=2/weight/model-77004"

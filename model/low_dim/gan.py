@@ -107,47 +107,51 @@ class Gan():
                     self.sess.run(self.G_solver)
                 merge, global_step = self.sess.run([self.merged, self.global_step])
                 self.train_writer.add_summary(merge, global_step)
-                if ((global_step % 500) == 0):
-                    varying_noise_continuous_ndim_without_category(self, global_step, 0, self.total_con_dim, result_dir)
                 if ((i % 1000) == 0):
                     fig = plt.figure()
-                    ax1 = fig.add_subplot(111)
+                    ax1 = fig.add_subplot(311)
+                    ax2 = fig.add_subplot(312)
+                    ax3 = fig.add_subplot(313)
+                    varying_noise_continuous_ndim_without_category(self, ax2, global_step, 0, self.total_con_dim, result_dir)
+                    varying_noise_continuous_ndim_without_category(self, ax3, global_step, 1, self.total_con_dim, result_dir)
                     gen_data_test = self.sess.run(self.gen_data)
                     ax1.scatter(gen_data_test[:, 0], gen_data_test[:, 1], s = 10, c ='b', marker="s", label='first')
+                    ax2.scatter(gen_data_test[:, 0], gen_data_test[:, 1], s = 10, c ='b', marker="s", label='first')
                     fig.savefig(os.path.join(result_dir, str(i)+'.png'), dpi=fig.dpi)
                     plt.close(fig)
                     self.saver.save(self.sess, os.path.join(ckpt_dir, 'model'), global_step=self.global_step)
+                if ((i % 5000) ==0):
+                    print(i)
 
+    # def test(self, result_dir):
+    #     fig = plt.figure()
+    #     ax1 = fig.add_subplot(111)
 
-    def test(self, result_dir):
-        fig = plt.figure()
-        ax1 = fig.add_subplot(111)
+    #     new_data = self.sess.run(self.gen_data)
+    #     ax1.scatter(new_data[:, 0], new_data[:, 1], s = 10, c ='b', marker="s", label='first')
+    #     fig.savefig(os.path.join(result_dir, 'test.png'), dpi=fig.dpi)
 
-        new_data = self.sess.run(self.gen_data)
-        ax1.scatter(new_data[:, 0], new_data[:, 1], s = 10, c ='b', marker="s", label='first')
-        fig.savefig(os.path.join(result_dir, 'test.png'), dpi=fig.dpi)
+    # def test_tmp(self, ckpt_dir, result_dir):
+    #     with self.graph.as_default():
+    #         path_to_latest_ckpt = tf.train.latest_checkpoint(checkpoint_dir=ckpt_dir)
+    #         if path_to_latest_ckpt == None:
+    #             print('There is no trained weight files...')
+    #             return
+    #         else:
+    #             self.saver.restore(self.sess, path_to_latest_ckpt)
+    #             print('restored')
+    #             images = self.sess.run(self.gen_data)
+    #             print('shape check of result : ', images.shape)
 
-    def test_tmp(self, ckpt_dir, result_dir):
-        with self.graph.as_default():
-            path_to_latest_ckpt = tf.train.latest_checkpoint(checkpoint_dir=ckpt_dir)
-            if path_to_latest_ckpt == None:
-                print('There is no trained weight files...')
-                return
-            else:
-                self.saver.restore(self.sess, path_to_latest_ckpt)
-                print('restored')
-                images = self.sess.run(self.gen_data)
-                print('shape check of result : ', images.shape)
+    #         fig = plt.figure()
+    #         ax1 = fig.add_subplot(111)
+    #         with variable_scope.variable_scope(self.dis_scope.name, reuse = True):
+    #             test_tmp_data = self.generator(tf.random_uniform([1000, 1], 0., 1)) #real/fake loss
+    #             new_data = self.sess.run(test_tmp_data)
+    #         ax1.scatter(new_data[:, 0], new_data[:, 1], s = 10, c ='b', marker="s", label='first')
+    #         fig.savefig(os.path.join(result_dir, 'test1.png'), dpi=fig.dpi)
 
-            fig = plt.figure()
-            ax1 = fig.add_subplot(111)
-            with variable_scope.variable_scope(self.dis_scope.name, reuse = True):
-                test_tmp_data = self.generator(tf.random_uniform([1000, 1], 0., 1)) #real/fake loss
-                new_data = self.sess.run(test_tmp_data)
-            ax1.scatter(new_data[:, 0], new_data[:, 1], s = 10, c ='b', marker="s", label='first')
-            fig.savefig(os.path.join(result_dir, 'test1.png'), dpi=fig.dpi)
-
-def varying_noise_continuous_ndim_without_category(self, iteration, order, total_continuous_dim, result_path):
+def varying_noise_continuous_ndim_without_category(self, figure, iteration, order, total_continuous_dim, result_path):
     """Create noise showing impact of categorical noise in InfoGAN.
 
     Categorical noise is constant across columns. Other noise is constant across
@@ -163,9 +167,12 @@ def varying_noise_continuous_ndim_without_category(self, iteration, order, total
     result_path : path to save the result
     """
 
-    continuous_sample_points = np.linspace(-1.0, 1.0, 20)
+    continuous_sample_points = np.linspace(-2.0, 2.0, 20)
+    #a specific noise factor will be varied with 10 steps.
 
     num_points, steps = 10, len(continuous_sample_points)
+    # each step has points with randomly-sampled other noise factor
+
 
     continuous_noise = []
     for _ in range(num_points):
@@ -184,14 +191,12 @@ def varying_noise_continuous_ndim_without_category(self, iteration, order, total
     #colors = cm.rainbow(np.linspace(0, 1, len(continuous_sample_points)))
     colors = [ ( 1/(i%steps + 1), (i%steps + 1)/steps, 0, 1) for i in range( continuous_noise.shape[0] )] #yello to green
 
-    scales = [ 1.5**(i%steps + 1) for i in range( continuous_noise.shape[0] )]
+    scales = [ (1.1**(i%steps + 1))*10  for i in range( continuous_noise.shape[0] )]
 
     gen_data_test = self.sess.run(varying_data)
-    fig = plt.figure()
-    ax1 = fig.add_subplot(111)
+
+    ax1 = figure
     ax1.scatter(gen_data_test[:, 0], gen_data_test[:, 1], s=scales, c=colors)
-    fig.savefig(os.path.join(result_path, str(iteration) + '_varying_test.png'), dpi=fig.dpi)
-    plt.close(fig)
 
 def generator(gen_input_noise, weight_decay=2.5e-5):
     """InfoGAN discriminator network on MNIST digits.

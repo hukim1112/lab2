@@ -64,8 +64,7 @@ class Infogan():
         with self.graph.as_default():
                 # x = np.float32(np.random.uniform(-1, 1, [1, 1000])[0])
                 # y = np.float32(np.sin(x*np.pi) + np.random.normal(0, 0.2, [1000]))
-                # data = [[i, j] for i, j in zip(x, y)]
-                self.real_data = self.data.data             
+                # data = [[i, j] for i, j in zip(x, y)]           
                 self.gen_input_noise = get_noise(self.batch_size, self.total_con_dim)
 
                 with variable_scope.variable_scope('generator') as self.gen_scope:
@@ -115,21 +114,24 @@ class Infogan():
                     self.sess.run(self.mutual_information_solver)
                 merge, global_step = self.sess.run([self.merged, self.global_step])
                 self.train_writer.add_summary(merge, global_step)
-                if ((i % 500) == 0):
+                if ((i % 1000) == 0):
                     fig = plt.figure()
-                    ax1 = fig.add_subplot(111)
+                    ax1 = fig.add_subplot(311)
+                    ax2 = fig.add_subplot(312)
+                    ax3 = fig.add_subplot(313)
+                    varying_noise_continuous_ndim_without_category(self, ax2, global_step, 0, self.total_con_dim, result_dir)
+                    varying_noise_continuous_ndim_without_category(self, ax3, global_step, 1, self.total_con_dim, result_dir)
                     gen_data_test = self.sess.run(self.gen_data)
-                    print(self.gen_data.shape)
                     ax1.scatter(gen_data_test[:, 0], gen_data_test[:, 1], s = 10, c ='b', marker="s", label='first')
+                    #ax2.scatter(gen_data_test[:, 0], gen_data_test[:, 1], s = 10, c ='b', marker="s", label='first')
                     fig.savefig(os.path.join(result_dir, str(i)+'.png'), dpi=fig.dpi)
                     plt.close(fig)
-            varying_noise_continuous_ndim_without_category(self, 0, self.total_con_dim, result_dir)
+                    self.saver.save(self.sess, os.path.join(ckpt_dir, 'model'), global_step=self.global_step)
+                if ((i % 5000) ==0):
+                    print(i)
 
-                # if ((i % 500) == 0 ):
-                # 	self.saver.save(self.sess, os.path.join(ckpt_dir, 'model'), global_step=self.global_step)
 
-
-def varying_noise_continuous_ndim_without_category(self, order, total_continuous_dim, result_path):
+def varying_noise_continuous_ndim_without_category(self, figure, iteration, order, total_continuous_dim, result_path):
     """Create noise showing impact of categorical noise in InfoGAN.
 
     Categorical noise is constant across columns. Other noise is constant across
@@ -144,34 +146,37 @@ def varying_noise_continuous_ndim_without_category(self, order, total_continuous
     iteration : global step number
     result_path : path to save the result
     """
-    row_num = 5
-    continuous_sample_points = np.linspace(-1.0, 1.0, 10)
 
-    rows, cols = row_num, len(continuous_sample_points)
+    continuous_sample_points = np.linspace(-2.0, 2.0, 40)
+    #a specific noise factor will be varied with 10 steps.
+
+    num_points, steps = 10, len(continuous_sample_points)
+    # each step has points with randomly-sampled other noise factor
+
 
     continuous_noise = []
-    for _ in range(rows):
+    for _ in range(num_points):
         cur_sample = np.random.normal(size=[1, total_continuous_dim])
-        continuous_noise.extend([cur_sample]*cols)
+        continuous_noise.extend([cur_sample]*steps)
     continuous_noise = np.concatenate(continuous_noise)
 
-    varying_factor = np.tile(continuous_sample_points, rows)
+    varying_factor = np.tile(continuous_sample_points, num_points)
     continuous_noise[:, order] = varying_factor 
     continuous_noise = np.float32(continuous_noise)
     
     display_images = []
     with variable_scope.variable_scope(self.gen_scope.name, reuse = True):
-        data = self.generator(continuous_noise)
+        varying_data = self.generator(continuous_noise)
 
-    colors = cm.rainbow(np.linspace(0, 1, len(continuous_sample_points)))
-    gen_data_test = self.sess.run(self.gen_data)
-    for i in range(row_num):
-        fig = plt.figure()
-        ax1 = fig.add_subplot(111)
-        for j in range(len(continuous_sample_points)):
-            ax1.scatter(gen_data_test[len(continuous_sample_points)*i+j, 0], gen_data_test[len(continuous_sample_points)*i+j, 1], s = 10, c =colors[j], marker="s")
-        fig.savefig(os.path.join(result_path, str(i)+'_variation.png'), dpi=fig.dpi)
-        plt.close(fig)
+    #colors = cm.rainbow(np.linspace(0, 1, len(continuous_sample_points)))
+    colors = [ ( 1/(i%steps + 1), (i%steps + 1)/steps, 0, 1) for i in range( continuous_noise.shape[0] )] #yello to green
+
+    scales = [ (1.1**(i%steps + 1))*10  for i in range( continuous_noise.shape[0] )]
+
+    gen_data_test = self.sess.run(varying_data)
+
+    ax1 = figure
+    ax1.scatter(gen_data_test[:, 0], gen_data_test[:, 1], s=scales, c=colors)
 
 def mutual_information_penalty(
     structured_generator_inputs,
@@ -230,6 +235,8 @@ def generator(gen_input_noise, weight_decay=2.5e-5):
         # ie [-1, 1].
         net = layers.fully_connected(net, 2, normalizer_fn=None, activation_fn=tf.tanh)
         return net
+
+
 
 def discriminator(img, weight_decay=2.5e-5):
     """InfoGAN discriminator network on MNIST digits.

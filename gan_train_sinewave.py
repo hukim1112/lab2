@@ -4,19 +4,21 @@ import os
 import tensorflow as tf
 from matplotlib import pyplot as plt
 import numpy as np
+import data_generator as dg
 cat_dim = 10
 code_con_dim = 1
-total_con_dim = 1
+total_con_dim = 2
 channel = 1
 path = '/home/dan/prj/datasets/mnist'
 name = 'mnist'
 split_name = 'train'
 batch_size = 1000
 #iteration test
-save_path = '/home/hukim/prj/results'
-result_dir = os.path.join(save_path, 'test1', 'result')
-ckpt_dir =  os.path.join(save_path, 'test1', 'weight')
-log_dir =  os.path.join(save_path, 'test1', 'weight')
+save_path = '/home/dan/prj/lab2/results'
+test_name = 'test3_condim=2'
+result_dir = os.path.join(save_path, test_name, 'result')
+ckpt_dir =  os.path.join(save_path, test_name, 'weight')
+log_dir =  os.path.join(save_path, test_name, 'weight')
 if not os.path.isdir(result_dir):
 	os.makedirs(result_dir)
 if not os.path.isdir(ckpt_dir):
@@ -26,10 +28,7 @@ if not os.path.isdir(log_dir):
 
 
 
-x = np.float32(np.random.uniform(-1, 1, [1, 1000])[0])
-y = np.float32(np.sin(x*np.pi)+np.random.normal(0, 0.1, 1000))
-real_data = np.array([[i, j] for i, j in zip(x, y)])
-
+real_data = dg.noisy_single_sinewave()
 fig = plt.figure()
 ax1 = fig.add_subplot(111)
 ax1.scatter(real_data[:, 0], real_data[:, 1], s = 10, c ='b', marker="s", label='first')
@@ -40,7 +39,6 @@ gan_data = data.Data(cat_dim, code_con_dim, total_con_dim, channel, path, name, 
 gan_data.real_data = real_data
 gan_model = gan.Gan(gan_data)
 gan_model.train(result_dir, ckpt_dir, log_dir, training_iteration = 50000, G_update_num=5, D_update_num=1)
-a = gan_model.test_tmp(ckpt_dir, result_dir)
 
 del gan_data
 del gan_model

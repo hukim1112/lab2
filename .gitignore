@@ -1,0 +1,5 @@
+#Ignore all folders named '__pycache__'
+__pycache__/
+
+#Ignore all weight folders
+/weight
