@@ -1,0 +1,6 @@
+model_checkpoint_path: "/home/dan/prj/lab2/results/test13/weight/model-49001"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test13/weight/model-45001"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test13/weight/model-46001"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test13/weight/model-47001"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test13/weight/model-48001"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test13/weight/model-49001"

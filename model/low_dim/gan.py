@@ -31,8 +31,9 @@ def get_noise(batch_size, total_continuous_noise_dims):
     (categorical structured noise, continuous structured noise).
   """
   # Get unstructurd noise.
-  noise = tf.random_normal(
-      [batch_size, total_continuous_noise_dims])
+  noise = (tf.random_uniform(
+      [batch_size, total_continuous_noise_dims]) - 0.5 )*4
+  # noise = tf.random_normal([batch_size, total_continuous_noise_dims])
 
   return noise
 
@@ -107,16 +108,27 @@ class Gan():
                     self.sess.run(self.G_solver)
                 merge, global_step = self.sess.run([self.merged, self.global_step])
                 self.train_writer.add_summary(merge, global_step)
+                
                 if ((i % 1000) == 0):
-                    fig = plt.figure()
+
+                    [gen_data_test, _input] = self.sess.run([self.gen_data, self.gen_input_noise])
+
+                    fig = plt.figure(figsize=(8, 12), dpi = 80)
                     ax1 = fig.add_subplot(311)
-                    ax2 = fig.add_subplot(312)
-                    ax3 = fig.add_subplot(313)
-                    varying_noise_continuous_ndim_without_category(self, ax2, global_step, 0, self.total_con_dim, result_dir)
-                    varying_noise_continuous_ndim_without_category(self, ax3, global_step, 1, self.total_con_dim, result_dir)
-                    gen_data_test = self.sess.run(self.gen_data)
                     ax1.scatter(gen_data_test[:, 0], gen_data_test[:, 1], s = 10, c ='b', marker="s", label='first')
+                    for j, factor in enumerate(_input):
+                        if j % 50 == 0:
+                            ax1.annotate(str(round(factor[0], 2)), (gen_data_test[j, 0], gen_data_test[j, 1]), color=(0, 0, 0))
+
+                    ax2 = fig.add_subplot(312)
                     ax2.scatter(gen_data_test[:, 0], gen_data_test[:, 1], s = 10, c ='b', marker="s", label='first')
+                    varying_noise_continuous_ndim_without_category(self, ax2, global_step, 0, self.total_con_dim, result_dir)
+
+
+
+                    ax3 = fig.add_subplot(313)
+                    varying_noise_continuous_ndim_without_category(self, ax3, global_step, 0, self.total_con_dim, result_dir)
+
                     fig.savefig(os.path.join(result_dir, str(i)+'.png'), dpi=fig.dpi)
                     plt.close(fig)
                     self.saver.save(self.sess, os.path.join(ckpt_dir, 'model'), global_step=self.global_step)
@@ -189,14 +201,16 @@ def varying_noise_continuous_ndim_without_category(self, figure, iteration, orde
         varying_data = self.generator(continuous_noise)
 
     #colors = cm.rainbow(np.linspace(0, 1, len(continuous_sample_points)))
-    colors = [ ( 1/(i%steps + 1), (i%steps + 1)/steps, 0, 1) for i in range( continuous_noise.shape[0] )] #yello to green
+    colors = [ ( 1/(i%steps + 1), 0, (i%steps + 1)/steps, 1) for i in range( continuous_noise.shape[0] )] #red to green
 
     scales = [ (1.1**(i%steps + 1))*10  for i in range( continuous_noise.shape[0] )]
 
     gen_data_test = self.sess.run(varying_data)
-
     ax1 = figure
-    ax1.scatter(gen_data_test[:, 0], gen_data_test[:, 1], s=scales, c=colors)
+    ax1.scatter(gen_data_test[:, 0], gen_data_test[:, 1], s=scales, c=(0, 0, 0))
+
+    for i, factor in enumerate(continuous_noise[:, order]):
+        ax1.annotate(str(round(factor, 2)), (gen_data_test[i, 0], gen_data_test[i, 1]), color=colors[i])
 
 def generator(gen_input_noise, weight_decay=2.5e-5):
     """InfoGAN discriminator network on MNIST digits.

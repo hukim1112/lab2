@@ -1,0 +1,6 @@
+model_checkpoint_path: "/home/dan/prj/lab2/results/infogan/test11/weight/model-38001"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/infogan/test11/weight/model-34001"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/infogan/test11/weight/model-35001"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/infogan/test11/weight/model-36001"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/infogan/test11/weight/model-37001"
+all_model_checkpoint_paths: "/home/dan/prj/lab2/results/infogan/test11/weight/model-38001"

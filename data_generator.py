@@ -1,8 +1,8 @@
 import numpy as np
 
-def noisy_single_sinewave():
+def noisy_single_sinewave(noise_sigma):
 	x = np.float32(np.random.uniform(-1, 1, [1, 1000])[0])
-	y = np.float32(np.sin(x*np.pi)+np.random.normal(0, 0.1, 1000))
+	y = np.float32(np.sin(x*np.pi)+np.random.normal(0, noise_sigma, 1000))
 	real_data = np.array([[i, j] for i, j in zip(x, y)])
 
 	return real_data
