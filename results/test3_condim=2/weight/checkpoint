@@ -1,6 +1,0 @@
-model_checkpoint_path: "/home/dan/prj/lab2/results/test3_condim=2/weight/model-57002"
-all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test3_condim=2/weight/model-53002"
-all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test3_condim=2/weight/model-54002"
-all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test3_condim=2/weight/model-55002"
-all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test3_condim=2/weight/model-56002"
-all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test3_condim=2/weight/model-57002"

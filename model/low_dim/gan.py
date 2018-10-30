@@ -32,7 +32,7 @@ def get_noise(batch_size, total_continuous_noise_dims):
   """
   # Get unstructurd noise.
   noise = (tf.random_uniform(
-      [batch_size, total_continuous_noise_dims]) - 0.5 )*4
+      [batch_size, total_continuous_noise_dims]) - 0.5 )*4*self.data.anything
   # noise = tf.random_normal([batch_size, total_continuous_noise_dims])
 
   return noise
@@ -60,6 +60,10 @@ class Gan():
         self.split_name = self.data.split_name
         self.batch_size = self.data.batch_size
         self.real_data = self.data.real_data
+
+        self.anything = self.data.anything
+
+
         print(self.batch_size)
         with self.graph.as_default():         
                 self.gen_input_noise = get_noise(self.batch_size, self.total_con_dim)

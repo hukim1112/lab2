@@ -1,6 +1,0 @@
-model_checkpoint_path: "/home/dan/prj/lab2/results/test2_without_noise/weight/model-98002"
-all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test2_without_noise/weight/model-94002"
-all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test2_without_noise/weight/model-95002"
-all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test2_without_noise/weight/model-96002"
-all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test2_without_noise/weight/model-97002"
-all_model_checkpoint_paths: "/home/dan/prj/lab2/results/test2_without_noise/weight/model-98002"
