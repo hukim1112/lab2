@@ -3,3 +3,4 @@ __pycache__/
 
 #Ignore all weight folders
 /weight
+/results
