@@ -186,7 +186,7 @@ def varying_noise_continuous_ndim_without_category(self, figure, iteration, orde
     continuous_sample_points = np.linspace(-2.0, 2.0, 20)
     #a specific noise factor will be varied with 10 steps.
 
-    num_points, steps = 10, len(continuous_sample_points)
+    num_points, steps = 1, len(continuous_sample_points)
     # each step has points with randomly-sampled other noise factor
 
 

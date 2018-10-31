@@ -9,12 +9,12 @@ cat_dim = 10
 code_con_dim = 1
 total_con_dim = 1
 channel = 1
-path = '/home/artia/prj/datasets/mnist'
+path = '/home/dan/prj/datasets/mnist'
 name = 'mnist'
 split_name = 'train'
 batch_size = 1000
 #iteration test
-save_path = '/home/artia/prj/lab2/results'
+save_path = '/home/dan/prj/lab2/results'
 
 
 
